@@ -32,7 +32,13 @@ print(f"Fields: {data.keys()}")
 x = data["x"]  # numpy array (f32)
 intensity = data["intensity"]  # numpy array (f32)
 
-# 2. Write a PCD file
+# 2. Read from memory (e.g., from network)
+with open("example.pcd", "rb") as f:
+    data_bytes = f.read()
+
+meta_buf, data_buf = pcd_py.read_pcd_from_buffer(data_bytes)
+
+# 3. Write a PCD file
 new_data = {
     "x": np.array([1.0, 2.0, 3.0], dtype=np.float32),
     "y": np.array([0.0, 0.0, 0.0], dtype=np.float32),

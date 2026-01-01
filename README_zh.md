@@ -32,7 +32,13 @@ print(f"Fields: {data.keys()}")
 x = data["x"]  # numpy array (f32)
 intensity = data["intensity"]  # numpy array (f32)
 
-# 2. 写入 PCD 文件
+# 2. 从内存读取 (例如网络流)
+with open("example.pcd", "rb") as f:
+    data_bytes = f.read()
+
+meta_buf, data_buf = pcd_py.read_pcd_from_buffer(data_bytes)
+
+# 3. 写入 PCD 文件
 new_data = {
     "x": np.array([1.0, 2.0, 3.0], dtype=np.float32),
     "y": np.array([0.0, 0.0, 0.0], dtype=np.float32),

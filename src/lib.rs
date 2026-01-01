@@ -2,15 +2,21 @@ use numpy::{
     IntoPyArray, PyArray1, PyArrayDescrMethods, PyArrayMethods, PyUntypedArray,
     PyUntypedArrayMethods,
 };
-use pcd_rs::header::{DataFormat, PcdHeader, ValueType};
-use pcd_rs::io::{read_pcd_file, PcdReader, PcdWriter};
+use pcd_rs::decoder::ascii::AsciiReader;
+
+use pcd_rs::decoder::binary_par::BinaryParallelDecoder;
+use pcd_rs::decoder::compressed::CompressedReader;
+
+use pcd_rs::header::{parse_header, DataFormat, PcdHeader, ValueType};
+use pcd_rs::io::{PcdReader, PcdWriter};
+use pcd_rs::layout::PcdLayout;
 use pcd_rs::storage::{Column, PointBlock};
 use pyo3::exceptions::{PyRuntimeError, PyTypeError};
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
+use pyo3::types::{PyBytes, PyDict};
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::BufWriter;
+use std::io::{BufWriter, Cursor};
 
 #[pyclass]
 #[derive(Clone)]
@@ -64,6 +70,79 @@ fn read_pcd(path: String) -> PyResult<(MetaData, Py<PyDict>)> {
             dict.set_item(name, py_array)?;
         }
 
+        Ok((meta, dict.into()))
+    })
+}
+
+#[pyfunction]
+fn read_pcd_from_buffer(buffer: &Bound<'_, PyBytes>) -> PyResult<(MetaData, Py<PyDict>)> {
+    let data = buffer.as_bytes();
+    let mut cursor = Cursor::new(data);
+
+    let header = parse_header(&mut cursor).map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+    let layout =
+        PcdLayout::from_header(&header).map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+    let start_pos = cursor.position() as usize;
+
+    let points = header.points;
+    let mut block = PointBlock::new(
+        &layout
+            .fields
+            .iter()
+            .map(|f| (f.name.clone(), f.type_))
+            .collect(),
+        points,
+    );
+
+    let data_slice = &data[start_pos..];
+
+    match header.data {
+        DataFormat::Binary => {
+            let decoder = BinaryParallelDecoder::new(&layout, points);
+            decoder
+                .decode_par(data_slice, &mut block)
+                .map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+        }
+        DataFormat::BinaryCompressed => {
+            // BinaryCompressed doesn't leverage parallel layout yet, use regular reader
+            let mut cursor = Cursor::new(data_slice);
+            let mut decoder = CompressedReader::new(&mut cursor, &layout, points);
+            decoder
+                .decode(&mut block)
+                .map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+        }
+        DataFormat::Ascii => {
+            let mut cursor = Cursor::new(data_slice);
+            let mut decoder = AsciiReader::new(&mut cursor, &layout, points);
+            decoder
+                .decode(&mut block)
+                .map_err(|e| PyRuntimeError::new_err(e.to_string()))?;
+        }
+    }
+
+    let meta = MetaData {
+        version: header.version.clone(),
+        width: header.width,
+        height: header.height,
+        points: header.points,
+        viewpoint: header.viewpoint.to_vec(),
+    };
+
+    Python::with_gil(|py| {
+        let dict = PyDict::new(py);
+        for (name, column) in block.columns {
+            let py_array = match column {
+                Column::F32(v) => v.into_pyarray(py).to_owned().into_any(),
+                Column::F64(v) => v.into_pyarray(py).to_owned().into_any(),
+                Column::U8(v) => v.into_pyarray(py).to_owned().into_any(),
+                Column::U16(v) => v.into_pyarray(py).to_owned().into_any(),
+                Column::U32(v) => v.into_pyarray(py).to_owned().into_any(),
+                Column::I8(v) => v.into_pyarray(py).to_owned().into_any(),
+                Column::I16(v) => v.into_pyarray(py).to_owned().into_any(),
+                Column::I32(v) => v.into_pyarray(py).to_owned().into_any(),
+            };
+            dict.set_item(name, py_array)?;
+        }
         Ok((meta, dict.into()))
     })
 }
@@ -203,6 +282,7 @@ fn write_pcd(
 fn pcd_py(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<MetaData>()?;
     m.add_function(wrap_pyfunction!(read_pcd, m)?)?;
+    m.add_function(wrap_pyfunction!(read_pcd_from_buffer, m)?)?;
     m.add_function(wrap_pyfunction!(write_pcd, m)?)?;
     Ok(())
 }
