@@ -2,7 +2,7 @@
 name = "pcd-py"
 version = "0.1.1"
 edition = "2024"
-description "`pcd-py` is a high-speed Python library for reading and writing PCD (Point Cloud Data) files, powered by a core implementation in Rust (`rs-pcd`). It integrates seamlessly with **NumPy** for efficient data handling."
+description = "`pcd-py` is a high-speed Python library for reading and writing PCD (Point Cloud Data) files, powered by a core implementation in Rust (`rs-pcd`). It integrates seamlessly with **NumPy** for efficient data handling."
 
 [lib]
 name = "pcd_py"

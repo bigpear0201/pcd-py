@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bigpear0201/pcd-py
+Homepage = "https://github.com/bigpear0201/pcd-py"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
