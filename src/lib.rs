@@ -2,18 +2,18 @@ use numpy::{
     IntoPyArray, PyArray1, PyArrayDescrMethods, PyArrayMethods, PyUntypedArray,
     PyUntypedArrayMethods,
 };
-use pcd_rs::decoder::ascii::AsciiReader;
+use rs_pcd::decoder::ascii::AsciiReader;
 
-use pcd_rs::decoder::binary_par::BinaryParallelDecoder;
-use pcd_rs::decoder::compressed::CompressedReader;
+use rs_pcd::decoder::binary_par::BinaryParallelDecoder;
+use rs_pcd::decoder::compressed::CompressedReader;
 
-use pcd_rs::header::{parse_header, DataFormat, PcdHeader, ValueType};
-use pcd_rs::io::{PcdReader, PcdWriter};
-use pcd_rs::layout::PcdLayout;
-use pcd_rs::storage::{Column, PointBlock};
 use pyo3::exceptions::{PyRuntimeError, PyTypeError};
 use pyo3::prelude::*;
 use pyo3::types::{PyBytes, PyDict};
+use rs_pcd::header::{DataFormat, PcdHeader, ValueType, parse_header};
+use rs_pcd::io::{PcdReader, PcdWriter};
+use rs_pcd::layout::PcdLayout;
+use rs_pcd::storage::{Column, PointBlock};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufWriter, Cursor};

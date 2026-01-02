@@ -1612,21 +1612,8 @@ dependencies = [
  "maturin",
  "ndarray",
  "numpy",
- "pcd-rs",
  "pyo3",
-]
-
-[[package]]
-name = "pcd-rs"
-version = "0.1.0"
-dependencies = [
- "byteorder",
- "bytes",
- "flate2",
- "lzf",
- "memmap2",
- "rayon",
- "thiserror 2.0.17",
+ "rs-pcd",
 ]
 
 [[package]]
@@ -2042,6 +2029,21 @@ dependencies = [
  "libc",
  "untrusted",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "rs-pcd"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4a98e6d61cb17f021f8d9e7faf54036017f5a12b9beeaf4527cbd1d34f2e638"
+dependencies = [
+ "byteorder",
+ "bytes",
+ "flate2",
+ "lzf",
+ "memmap2",
+ "rayon",
+ "thiserror 2.0.17",
 ]
 
 [[package]]
