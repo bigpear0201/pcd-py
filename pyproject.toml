@@ -4,13 +4,24 @@ build-backend = "maturin"
 
 [project]
 name = "pcd-py"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version", "description"]
+readme = "README.md"
+authors = [
+    { name = "bigpear0201", email = "bigpear0201@gmail.com" }
+]
+license = { file = "LICENSE" }
+dependencies = [
+    "numpy >= 2.2.6",
+]
 
-#[tool.maturin]
-#features = ["pyo3/extension-module"]
+[project.urls]
+Homepage = "https://github.com/bigpear0201/pcd-py
+
+[tool.maturin]
+features = ["pyo3/extension-module"]

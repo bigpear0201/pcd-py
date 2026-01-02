@@ -1,6 +1,6 @@
 # pcd-py: High-Performance PCD I/O for Python
 
-`pcd-py` is a high-speed Python library for reading and writing PCD (Point Cloud Data) files, powered by a core implementation in Rust (`pcd-rs`). It integrates seamlessly with **NumPy** for efficient data handling.
+`pcd-py` is a high-speed Python library for reading and writing PCD (Point Cloud Data) files, powered by a core implementation in Rust (`rs-pcd`). It integrates seamlessly with **NumPy** for efficient data handling.
 
 ## Features
 - **Fast I/O**: Leverages Rust for multi-threaded binary and compressed PCD handling.
