@@ -1606,7 +1606,7 @@ checksum = "1e91099d4268b0e11973f036e885d652fb0b21fedcf69738c627f94db6a44f42"
 
 [[package]]
 name = "pcd-py"
-version = "0.1.2"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "maturin",
@@ -2033,9 +2033,9 @@ dependencies = [
 
 [[package]]
 name = "rs-pcd"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b4a98e6d61cb17f021f8d9e7faf54036017f5a12b9beeaf4527cbd1d34f2e638"
+checksum = "7d3f6e0985efa702f40b133bf49bddc5a3f44e5e5c75232bdc4bc0ffede6edc4"
 dependencies = [
  "byteorder",
  "bytes",
